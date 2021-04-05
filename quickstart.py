@@ -7,6 +7,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
 from vidtest import getframes
+from time import time
 
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
 DOCUMENT_ID = '1HbI9540qtaDd0W13Y9typazBgutqB08j7-E_Zm2OTEQ'
@@ -69,6 +70,8 @@ def main():
         print('remaining ranges:')
         print(document.get('namedRanges', {}).get('main'))
 
+    createrange()
+
     request = [
         {
             'replaceNamedRangeContent': {
@@ -77,12 +80,24 @@ def main():
             }
         },
     ]
+    
+    frames = getframes('badapple.mp4', 5)
 
-    frames = getframes('badapple.mp4', 10)
+    prev_time = time()
 
-    for i in range(len(frames)):
-        request[0]['replaceNamedRangeContent']['text'] = frames[i]
-        service.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': request}).execute()
+    for frame in frames:
+        while time() < prev_time + 1:
+            pass
+        else:
+            request[0]['replaceNamedRangeContent']['text'] = frame
+            service.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': request}).execute()
+            prev_time = time()
+
+    print('DONE.')
+    request[0]['replaceNamedRangeContent']['text'] = 'DONE. '
+    service.documents().batchUpdate(documentId=DOCUMENT_ID, body={'requests': request}).execute()
+
+    deleteallranges()
 
 if __name__ == '__main__':
     main()
