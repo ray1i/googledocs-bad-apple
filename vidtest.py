@@ -23,7 +23,7 @@ def convertimagefromurl(imageurl):
     return res
 
 def convertimage(image):
-    chars = " ░▒▓█"
+    chars = "█▓▒░ "
     m = int(255/4)
 
     image = image.convert('L')
@@ -41,10 +41,10 @@ def convertimage(image):
 
 def getframes(vidurl, fps):
     vid = cv2.VideoCapture(vidurl)
-
     frames = []
-
     curr = 0
+    print('converting frames...')
+
     while True:
         ret, frame = vid.read()
         if ret:
